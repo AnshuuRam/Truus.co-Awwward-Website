@@ -162,7 +162,7 @@ body::-webkit-scrollbar {
     display: flex;
     justify-content: center;
     /* Ensure no scrollbar appears from this section */
-    
+
 }
 
 /* Base Card Styles */
@@ -319,13 +319,12 @@ body::-webkit-scrollbar {
 }
 
 .sticker-phone {
-    width: 80px;
-    height: 110px;
+    width: 100px;
+    height: 120px;
     top: -65px;
     left: 85%;
     transform: rotate(10deg);
-    background-color: #d1ff4d;
-    border-radius: 15px;
+    background: transparent;
 }
 
 .sticker-smiley {
