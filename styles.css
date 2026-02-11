@@ -16,7 +16,7 @@
     --color-orange: #f5693c;
     --color-maroon: #a0325a;
     --color-pink: #f0befa;
-    --bg-color: #f2ede4;
+    --bg-color: #f0ebe6;
 }
 
 * {
@@ -179,7 +179,7 @@ body::-webkit-scrollbar {
     align-items: stretch;
     gap: 1.5rem;
     padding: 3.5rem 1.5rem 1.5rem;
-
+    cursor: pointer;
     /* Styling */
     border-radius: 10px;
     color: white;
