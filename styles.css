@@ -72,8 +72,9 @@ body::-webkit-scrollbar {
     font-weight: 800;
     font-size: 2rem;
     margin-left: 70px;
-    color: #000;
+    color: inherit;
     letter-spacing: -0.5px;
+    transition: color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .navbar {
@@ -87,6 +88,15 @@ body::-webkit-scrollbar {
     padding: 20px 40px;
     background: transparent;
     z-index: 1000;
+    transition: color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.navbar.on-dark {
+    color: #f0ebe6;
+}
+
+.navbar.on-light {
+    color: #1a1a1a;
 }
 
 .logo-truus {
@@ -95,21 +105,30 @@ body::-webkit-scrollbar {
     height: auto;
 }
 
+.logo-truus path,
+.nav-bar__whatsapp-svg path {
+    fill: currentColor;
+    transition: fill 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .nav-bar__whatsapp-svg {
     width: 32px;
     height: auto;
     display: block;
-    color: #000;
+    color: inherit;
 }
 
 .header-content {
+    background-color: #1a1a1a;
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
+    color: #f0ebe6;
 }
 
 .header-content h1 {
+    color: inherit;
     font-size: 3rem;
     font-family: 'DM Sans', sans-serif;
 }
@@ -360,7 +379,7 @@ body::-webkit-scrollbar {
 .main-footer {
     height: 100vh;
     background-color: #1a1a1a;
-    color: white;
+    color: #f0ebe6;
     display: flex;
     justify-content: center;
     align-items: center;
