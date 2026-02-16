@@ -123,3 +123,34 @@ cards.forEach((card, index) => {
         });
     });
 });
+
+// Double Marquee Section Animations
+gsap.set(".marquee-left .marquee-svg-item:nth-child(2) path", { strokeDashoffset: 1000 });
+
+const marqueeTl = gsap.timeline({
+    scrollTrigger: {
+        trigger: ".Double-marquee",
+        start: "top 70%",
+        toggleActions: "play none none none",
+        once: true
+    }
+});
+
+marqueeTl.to(".marquee-underline", {
+    scaleX: 1,
+    opacity: 1,
+    duration: 1,
+    ease: "power2.out"
+})
+    .to(".marquee-left .marquee-svg-item:nth-child(1)", {
+        scale: 1,
+        opacity: 1,
+        rotation: -10,
+        duration: 0.6,
+        ease: "back.out(1.7)"
+    }, "-=0.5")
+    .to(".marquee-left .marquee-svg-item:nth-child(2) path", {
+        strokeDashoffset: 0,
+        duration: 1.5,
+        ease: "power2.out"
+    }, "-=0.3");
