@@ -439,21 +439,11 @@ body::-webkit-scrollbar {
     height: auto;
     color: #000;
     z-index: 6;
-    animation: marqueeUnderlineDraw 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    transform: scaleX(0);
+    opacity: 0;
     transform-origin: left;
 }
 
-@keyframes marqueeUnderlineDraw {
-    from {
-        transform: scaleX(0);
-        opacity: 0;
-    }
-
-    to {
-        transform: scaleX(1);
-        opacity: 1;
-    }
-}
 
 .marquee-blob-container {
     position: absolute;
@@ -488,9 +478,9 @@ body::-webkit-scrollbar {
     left: 68%;
     width: 90px;
     height: auto;
-    transform: translateX(-50%) rotate(-10deg);
+    transform: translateX(-50%) scale(0) rotate(-20deg);
+    opacity: 0;
     z-index: 2;
-    animation: marqueePopUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s both;
 }
 
 .marquee-svg-item:nth-child(2) {
@@ -509,28 +499,7 @@ body::-webkit-scrollbar {
     animation: marqueeArrowDraw 2s ease-out 1.2s forwards;
 }
 
-@keyframes marqueeArrowDraw {
-    to {
-        stroke-dashoffset: 0;
-    }
-}
 
-@keyframes marqueePopUp {
-    0% {
-        transform: translateX(-50%) scale(0) rotate(-20deg);
-        opacity: 0;
-    }
-
-    70% {
-        transform: translateX(-50%) scale(1.1) rotate(5deg);
-        opacity: 1;
-    }
-
-    100% {
-        transform: translateX(-50%) scale(1) rotate(-10deg);
-        opacity: 1;
-    }
-}
 
 .marquee-right {
     flex: 0 0 auto;
@@ -607,7 +576,7 @@ body::-webkit-scrollbar {
 
 .marquee-item {
     width: 100%;
-    height: 125px;
+    height: 156px;
     border-radius: 12px;
     display: flex;
     align-items: center;
@@ -632,6 +601,49 @@ body::-webkit-scrollbar {
 
 .main-footer h1 {
     font-size: 3rem;
+}
+
+/* Marquee Item Styling for SVG Logos */
+.marquee-item[data-logo-theme="a"] {
+    background-color: #a52a5f;
+}
+
+.marquee-item[data-logo-theme="b"] {
+    background-color: #4b69f0;
+}
+
+.marquee-item[data-logo-theme="c"] {
+    background-color: #ff6b4a;
+}
+
+.marquee-item[data-logo-theme="d"] {
+    background-color: #29725f;
+}
+
+.marquee-logo {
+    position: relative;
+    width: 60%;
+    height: 60%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.marquee-logo__before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.cover-image {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+    /* Assume logos should be white on colored background */
 }
 
 @media (max-width: 1200px) {
