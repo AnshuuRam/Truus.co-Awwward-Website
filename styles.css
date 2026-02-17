@@ -616,37 +616,7 @@ body::-webkit-scrollbar {
 }
 
 /* Brand specific themes */
-.marquee-item[data-brand="hema"] {
-    background-color: var(--color-darkblue);
-}
-
-.marquee-item[data-brand="netflix"] {
-    background-color: var(--color-orange);
-}
-
-.marquee-item[data-brand="ace-tate"] {
-    background-color: var(--color-orange);
-}
-
-.marquee-item[data-brand="getir"] {
-    background-color: var(--color-lightgreen);
-}
-
-.marquee-item[data-brand="oxxio"] {
-    background-color: var(--color-lightblue);
-}
-
-.marquee-item[data-brand="kfc"] {
-    background-color: var(--color-pink);
-}
-
-.marquee-item[data-brand="anwb"] {
-    background-color: var(--color-lightblue);
-}
-
-.marquee-item[data-brand="swapfiets"] {
-    background-color: var(--color-maroon);
-}
+/* Brand specific themes are now randomized via JavaScript in script.js */
 
 .marquee-logo {
     position: relative;
