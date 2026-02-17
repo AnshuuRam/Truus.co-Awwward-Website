@@ -154,3 +154,69 @@ marqueeTl.to(".marquee-underline", {
         duration: 1.5,
         ease: "power2.out"
     }, "-=0.3");
+
+// Marquee Randomization Logic
+const brands = [
+    { name: "oxxio", src: "https://cdn.prod.website-files.com/683863cbe1f5a81b667b9939/686bc2c07339dde8931c0c50_oxxio_logo.svg" },
+    { name: "hema", src: "https://cdn.prod.website-files.com/683863cbe1f5a81b667b9939/686bc2d117d329bcecd8377b_hema_logo.svg" },
+    { name: "kfc", src: "https://cdn.prod.website-files.com/683863cbe1f5a81b667b9939/686bc2b720d4c815b09435c2_KFC_Logo.svg" },
+    { name: "swapfiets", src: "https://cdn.prod.website-files.com/683863cbe1f5a81b667b9939/686bc2d7cace3b14a9d8aa44_swapfiets_logo.svg" },
+    { name: "anwb", src: "https://cdn.prod.website-files.com/683863cbe1f5a81b667b9939/686bc2a8f4b310a3d6a5ce7d_anwb_logo.svg" },
+    { name: "netflix", src: "https://cdn.prod.website-files.com/683863cbe1f5a81b667b9939/686bc2d117d329bcecd8377b_hema_logo.svg" }, // Placeholder logo for netflix
+    { name: "ace-tate", src: "https://cdn.prod.website-files.com/683863cbe1f5a81b667b9939/686bc299e71b345ff0fd4429_ace_tate_kigi.svg" },
+    { name: "getir", src: "https://cdn.prod.website-files.com/683863cbe1f5a81b667b9939/686bc2d117d329bcecd8377b_hema_logo.svg" } // Placeholder logo for getir
+];
+
+const colors = [
+    "var(--color-green)",
+    "var(--color-lightblue)",
+    "var(--color-darkblue)",
+    "var(--color-lightgreen)",
+    "var(--color-orange)",
+    "var(--color-maroon)",
+    "var(--color-pink)"
+];
+
+function shuffleArray(array) {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+}
+
+function createMarqueeItem(brand, color) {
+    return `
+        <div class="marquee-item" data-brand="${brand.name}" style="background-color: ${color}">
+            <div class="marquee-logo">
+                <div class="marquee-logo__before"></div>
+                <img src="${brand.src}" loading="lazy" alt="${brand.name}" class="cover-image">
+            </div>
+        </div>
+    `;
+}
+
+function populateMarquees() {
+    const tracks = document.querySelectorAll('.marquee-track');
+    if (!tracks.length) return;
+
+    tracks.forEach((track, trackIndex) => {
+        const shuffledBrands = shuffleArray(brands);
+        const shuffledColors = shuffleArray(colors);
+
+        let trackContent = '';
+        shuffledBrands.forEach((brand, index) => {
+            const color = shuffledColors[index % shuffledColors.length];
+            trackContent += createMarqueeItem(brand, color);
+        });
+
+        track.innerHTML = trackContent + trackContent;
+    });
+}
+
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    populateMarquees();
+} else {
+    document.addEventListener('DOMContentLoaded', populateMarquees);
+}
