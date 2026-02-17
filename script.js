@@ -234,10 +234,10 @@ wiggleElements.forEach(element => {
     element.addEventListener('mouseenter', () => {
         wiggleTween = gsap.to(target, {
             rotation: intensity,
-            duration: 0.3,
+            duration: 0.14,
             repeat: -1,
             yoyo: true,
-            ease: "steps(4)"
+            ease: "steps(1)"
         });
     });
 
