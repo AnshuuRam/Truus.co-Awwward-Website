@@ -415,13 +415,13 @@ body::-webkit-scrollbar {
 
 .marquee-left h2 {
     font-family: 'Epilogue', sans-serif;
-    font-size: 5.5rem;
-    font-weight: 800;
+    font-size: 4rem;
+    font-weight: 1000;
     line-height: 0.95;
     letter-spacing: -2px;
     color: #000;
-    margin-bottom: 60px;
-    margin-right: 0;
+    margin-bottom: 120px;
+    margin-right: 50px;
 }
 
 .text-with {
@@ -508,7 +508,8 @@ body::-webkit-scrollbar {
     height: 850px;
     position: relative;
     overflow: hidden;
-    width: 700px;
+    width: 500px;
+    margin-right: 80px;
 }
 
 .marquee-column {
