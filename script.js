@@ -24,8 +24,8 @@ const updateNavbarColor = () => {
     const footerTop = footerRect.top + window.scrollY;
 
     if (scrollPos >= footerTop) {
-        navbar.classList.add('on-dark');
-        navbar.classList.remove('on-light');
+        navbar.classList.add('on-light');
+        navbar.classList.remove('on-dark');
     } else if (scrollPos >= doubleMarqueeTop) {
         navbar.classList.add('on-light');
         navbar.classList.remove('on-dark');
@@ -220,3 +220,34 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
 } else {
     document.addEventListener('DOMContentLoaded', populateMarquees);
 }
+
+// Social Wiggle Animation
+const wiggleElements = document.querySelectorAll('[data-wiggle]');
+
+wiggleElements.forEach(element => {
+    const intensity = parseFloat(element.getAttribute('data-wiggle')) || 5;
+    const target = element.querySelector('[data-wiggle-target]') || element;
+
+    let wiggleTween;
+
+    element.addEventListener('mouseenter', () => {
+        wiggleTween = gsap.to(target, {
+            rotation: intensity,
+            duration: 0.3,
+            repeat: -1,
+            yoyo: true,
+            ease: "steps(4)"
+        });
+    });
+
+    element.addEventListener('mouseleave', () => {
+        if (wiggleTween) {
+            wiggleTween.kill();
+            gsap.to(target, {
+                rotation: 0,
+                duration: 0.3,
+                ease: "power2.out"
+            });
+        }
+    });
+});
