@@ -1,3 +1,20 @@
+// ─── Lenis Smooth Scroll ───────────────────────────────────────────────────
+const lenis = new Lenis({
+    duration: 1.2,          // scroll duration multiplier
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // expo ease-out
+    smoothWheel: true,      // smooth mouse-wheel scrolling
+    touchMultiplier: 1.5,   // feel on touch devices
+});
+
+// Keep GSAP ScrollTrigger in sync with Lenis
+lenis.on('scroll', ScrollTrigger.update);
+
+gsap.ticker.add((time) => {
+    lenis.raf(time * 1000);
+});
+
+gsap.ticker.lagSmoothing(0); // prevent GSAP catching up after tab focus
+
 // Navbar scroll effect
 const navbar = document.querySelector('.navbar');
 const header = document.querySelector('.header-content');
