@@ -54,188 +54,189 @@ gsap.to(".title-underline-svg path", {
     }
 });
 
-// GSAP Truus-style Card Hover Animation
-const cards = gsap.utils.toArray(".card");
-
-// Original rotations from CSS
-const originalData = [
-    { rotation: 4 },
-    { rotation: -5 },
-    { rotation: 5 },
-    { rotation: -8 },
-    { rotation: 5 }
-];
-
-let leaveTimeout = null;
-
+// GSAP Truus-style Card Hover Animation — called after cards are injected into DOM
 const isMobile = window.matchMedia('(max-width: 768px)').matches;
+function initCardAnimations() {
+    const cards = gsap.utils.toArray(".card");
 
-if (!isMobile) {
-    cards.forEach((card, index) => {
-        card.addEventListener("mouseenter", () => {
-            // Cancel any pending reset from leaving a previous card
-            if (leaveTimeout) {
-                clearTimeout(leaveTimeout);
-                leaveTimeout = null;
-            }
+    // Original rotations from CSS
+    const originalData = [
+        { rotation: 4 },
+        { rotation: -5 },
+        { rotation: 5 },
+        { rotation: -8 },
+        { rotation: 5 }
+    ];
 
-            const hoverGap = 120;   // gap between hovered card and nearest neighbor
-            const clusterGap = 150;  // small gap between clustered non-hovered cards
-            const cardWidth = 320;
+    let leaveTimeout = null;
 
-            const hoveredLeft = cards[index].offsetLeft;
-
-            // Separate into left and right groups
-            const leftCards = [];
-            const rightCards = [];
-
-            cards.forEach((otherCard, otherIndex) => {
-                if (otherIndex < index) leftCards.push({ card: otherCard, index: otherIndex });
-                else if (otherIndex > index) rightCards.push({ card: otherCard, index: otherIndex });
-            });
-
-            // Hovered card moves to common vertical axis (50px from top)
-            const currentTop = cards[index].offsetTop;
-            const targetCommonTop = 50;
-            const moveY = targetCommonTop - currentTop;
-
-            gsap.to(cards[index], {
-                x: 0,
-                y: moveY,
-                rotation: 0,
-                scale: 1.08,
-                duration: 0.9,
-                ease: "elastic.out(1, 0.5)",
-                overwrite: true
-            });
-
-            // Right cluster: nearest card always at hoverGap distance
-            if (rightCards.length) {
-                const clusterStart = hoveredLeft + cardWidth + hoverGap;
-
-                rightCards.forEach((item, i) => {
-                    const targetAbsLeft = clusterStart + (i * clusterGap);
-                    // Ensure card always moves right, never toward hovered card
-                    const targetX = Math.max(targetAbsLeft - item.card.offsetLeft, 10);
-
-                    // Calculate vertical offset to move along the card's rotation axis
-                    const angleRad = originalData[item.index].rotation * (Math.PI / 180);
-                    const targetY = targetX * Math.tan(angleRad);
-
-                    gsap.to(item.card, {
-                        x: targetX,
-                        y: targetY,
-                        rotation: originalData[item.index].rotation,
-                        scale: 1, // original size, no shrinking
-                        duration: 1.0,
-                        ease: "elastic.out(1, 0.5)",
-                        overwrite: true
-                    });
-                });
-            }
-
-            // Left cluster: nearest card always at hoverGap distance
-            if (leftCards.length) {
-                leftCards.reverse(); // nearest card first
-                const clusterStart = hoveredLeft - hoverGap - cardWidth;
-
-                leftCards.forEach((item, i) => {
-                    const targetAbsLeft = clusterStart - (i * clusterGap);
-                    // Ensure card always moves left, never toward hovered card
-                    const targetX = Math.min(targetAbsLeft - item.card.offsetLeft, -10);
-
-                    // Calculate vertical offset to move along the card's rotation axis
-                    const angleRad = originalData[item.index].rotation * (Math.PI / 180);
-                    const targetY = targetX * Math.tan(angleRad);
-
-                    gsap.to(item.card, {
-                        x: targetX,
-                        y: targetY,
-                        rotation: originalData[item.index].rotation,
-                        scale: 1, // original size, no shrinking,
-                        duration: 1.0,
-                        ease: "elastic.out(1, 0.5)",
-                        overwrite: true
-                    });
-                });
-            }
-        });
-
-        card.addEventListener("mouseleave", () => {
-            // Delay the reset so moving between cards feels seamless
-            leaveTimeout = setTimeout(() => {
-                cards.forEach((c, i) => {
-                    gsap.to(c, {
-                        x: 0,
-                        y: 0,
-                        scale: 1,
-                        rotation: originalData[i].rotation,
-                        duration: 1.0,
-                        ease: "elastic.out(1, 0.5)",
-                        overwrite: true,
-                        zIndex: i + 1
-                    });
-                });
-            }, 80);
-        });
-    });
-} else {
-    // ─── Mobile: Stacked card scroll reveal ───
-    const cardsWrapper = document.querySelector('.cards-wrapper');
-    const scrollPerCard = window.innerHeight * 0.8; // scroll distance to reveal each card
-    const navH = 60;
-    const cardTopOffset = 90; // distance from top of viewport to card stack
-
-    // Rotation for each card in the mobile stack
-    const mobileRotations = [-6, 4, -8, 5, -3];
-
-    // Position all cards absolutely, stacked at top-center of wrapper
-    cards.forEach((card, i) => {
-        gsap.set(card, {
-            position: 'absolute',
-            left: '50%',
-            top: '0',
-            xPercent: -50,
-            y: i === 0 ? 0 : window.innerHeight * 1.1, // first card visible, rest off-screen below
-            rotation: mobileRotations[i % mobileRotations.length],
-            zIndex: i + 1,   // later cards sit on top
-            transformOrigin: 'center center'
-        });
-    });
-
-    // Set wrapper height to give enough room to scroll through all cards
-    const wrapperH = window.innerHeight * 0.7 + scrollPerCard * (cards.length - 1);
-    gsap.set(cardsWrapper, { height: wrapperH });
-
-    // Pin the wrapper so the deck stays on screen while scrolling
-    ScrollTrigger.create({
-        trigger: cardsWrapper,
-        start: `top ${navH}px`,
-        end: `+=${scrollPerCard * (cards.length - 1)}`,
-        pin: true,
-        pinSpacing: true,
-        id: 'mobile-cards-pin'
-    });
-
-    // Reveal each card from below as user scrolls
-    cards.forEach((card, i) => {
-        if (i === 0) return; // first card is already visible
-
-        gsap.fromTo(card,
-            { y: window.innerHeight * 1.1 },
-            {
-                y: 0,
-                ease: 'power3.out',
-                scrollTrigger: {
-                    trigger: cardsWrapper,
-                    start: `top+=${(i - 1) * scrollPerCard} ${navH}px`,
-                    end: `top+=${i * scrollPerCard} ${navH}px`,
-                    scrub: 0.4
+    if (!isMobile) {
+        cards.forEach((card, index) => {
+            card.addEventListener("mouseenter", () => {
+                // Cancel any pending reset from leaving a previous card
+                if (leaveTimeout) {
+                    clearTimeout(leaveTimeout);
+                    leaveTimeout = null;
                 }
-            }
-        );
-    });
-}
+
+                const hoverGap = 120;   // gap between hovered card and nearest neighbor
+                const clusterGap = 150;  // small gap between clustered non-hovered cards
+                const cardWidth = 320;
+
+                const hoveredLeft = cards[index].offsetLeft;
+
+                // Separate into left and right groups
+                const leftCards = [];
+                const rightCards = [];
+
+                cards.forEach((otherCard, otherIndex) => {
+                    if (otherIndex < index) leftCards.push({ card: otherCard, index: otherIndex });
+                    else if (otherIndex > index) rightCards.push({ card: otherCard, index: otherIndex });
+                });
+
+                // Hovered card moves to common vertical axis (50px from top)
+                const currentTop = cards[index].offsetTop;
+                const targetCommonTop = 50;
+                const moveY = targetCommonTop - currentTop;
+
+                gsap.to(cards[index], {
+                    x: 0,
+                    y: moveY,
+                    rotation: 0,
+                    scale: 1.08,
+                    duration: 0.9,
+                    ease: "elastic.out(1, 0.5)",
+                    overwrite: true
+                });
+
+                // Right cluster: nearest card always at hoverGap distance
+                if (rightCards.length) {
+                    const clusterStart = hoveredLeft + cardWidth + hoverGap;
+
+                    rightCards.forEach((item, i) => {
+                        const targetAbsLeft = clusterStart + (i * clusterGap);
+                        // Ensure card always moves right, never toward hovered card
+                        const targetX = Math.max(targetAbsLeft - item.card.offsetLeft, 10);
+
+                        // Calculate vertical offset to move along the card's rotation axis
+                        const angleRad = originalData[item.index].rotation * (Math.PI / 180);
+                        const targetY = targetX * Math.tan(angleRad);
+
+                        gsap.to(item.card, {
+                            x: targetX,
+                            y: targetY,
+                            rotation: originalData[item.index].rotation,
+                            scale: 1, // original size, no shrinking
+                            duration: 1.0,
+                            ease: "elastic.out(1, 0.5)",
+                            overwrite: true
+                        });
+                    });
+                }
+
+                // Left cluster: nearest card always at hoverGap distance
+                if (leftCards.length) {
+                    leftCards.reverse(); // nearest card first
+                    const clusterStart = hoveredLeft - hoverGap - cardWidth;
+
+                    leftCards.forEach((item, i) => {
+                        const targetAbsLeft = clusterStart - (i * clusterGap);
+                        // Ensure card always moves left, never toward hovered card
+                        const targetX = Math.min(targetAbsLeft - item.card.offsetLeft, -10);
+
+                        // Calculate vertical offset to move along the card's rotation axis
+                        const angleRad = originalData[item.index].rotation * (Math.PI / 180);
+                        const targetY = targetX * Math.tan(angleRad);
+
+                        gsap.to(item.card, {
+                            x: targetX,
+                            y: targetY,
+                            rotation: originalData[item.index].rotation,
+                            scale: 1, // original size, no shrinking,
+                            duration: 1.0,
+                            ease: "elastic.out(1, 0.5)",
+                            overwrite: true
+                        });
+                    });
+                }
+            });
+
+            card.addEventListener("mouseleave", () => {
+                // Delay the reset so moving between cards feels seamless
+                leaveTimeout = setTimeout(() => {
+                    cards.forEach((c, i) => {
+                        gsap.to(c, {
+                            x: 0,
+                            y: 0,
+                            scale: 1,
+                            rotation: originalData[i].rotation,
+                            duration: 1.0,
+                            ease: "elastic.out(1, 0.5)",
+                            overwrite: true,
+                            zIndex: i + 1
+                        });
+                    });
+                }, 80);
+            });
+        });
+    } else {
+        // ─── Mobile: Stacked card scroll reveal ───
+        const cardsWrapper = document.querySelector('.cards-wrapper');
+        const scrollPerCard = window.innerHeight * 0.8; // scroll distance to reveal each card
+        const navH = 60;
+        const cardTopOffset = 90; // distance from top of viewport to card stack
+
+        // Rotation for each card in the mobile stack
+        const mobileRotations = [-6, 4, -8, 5, -3];
+
+        // Position all cards absolutely, stacked at top-center of wrapper
+        cards.forEach((card, i) => {
+            gsap.set(card, {
+                position: 'absolute',
+                left: '50%',
+                top: '0',
+                xPercent: -50,
+                y: i === 0 ? 0 : window.innerHeight * 1.1, // first card visible, rest off-screen below
+                rotation: mobileRotations[i % mobileRotations.length],
+                zIndex: i + 1,   // later cards sit on top
+                transformOrigin: 'center center'
+            });
+        });
+
+        // Set wrapper height to give enough room to scroll through all cards
+        const wrapperH = window.innerHeight * 0.7 + scrollPerCard * (cards.length - 1);
+        gsap.set(cardsWrapper, { height: wrapperH });
+
+        // Pin the wrapper so the deck stays on screen while scrolling
+        ScrollTrigger.create({
+            trigger: cardsWrapper,
+            start: `top ${navH}px`,
+            end: `+=${scrollPerCard * (cards.length - 1)}`,
+            pin: true,
+            pinSpacing: true,
+            id: 'mobile-cards-pin'
+        });
+
+        // Reveal each card from below as user scrolls
+        cards.forEach((card, i) => {
+            if (i === 0) return; // first card is already visible
+
+            gsap.fromTo(card,
+                { y: window.innerHeight * 1.1 },
+                {
+                    y: 0,
+                    ease: 'power3.out',
+                    scrollTrigger: {
+                        trigger: cardsWrapper,
+                        start: `top+=${(i - 1) * scrollPerCard} ${navH}px`,
+                        end: `top+=${i * scrollPerCard} ${navH}px`,
+                        scrub: 0.4
+                    }
+                }
+            );
+        });
+    }
+} // end initCardAnimations
 
 // Double Marquee Section Animations
 gsap.set(".marquee-left .marquee-svg-item:nth-child(2) path", { strokeDashoffset: 1000 });
@@ -487,4 +488,67 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
     injectSocialIcons();
 } else {
     document.addEventListener('DOMContentLoaded', injectSocialIcons);
+}
+
+// --- Service Cards â€” generated from JS data to reduce HTML size ---
+const CARDS_DATA = [
+    {
+        color: 'green',
+        sticker: 'camera',
+        title: 'brand',
+        services: ['Brand Strategy', '360\u00b0 Creative', 'Art Direction', 'Copywriting', 'Editing', 'Motion Graphics', 'DTP']
+    },
+    {
+        color: 'darkblue',
+        sticker: 'phone',
+        title: 'social',
+        services: ['Social Media Strategy', 'Social Media Creative', 'TikTok/Social Shoots', 'Influencer Campaign', 'Scheduling Support', 'Community Management', 'Social Listening']
+    },
+    {
+        color: 'orange',
+        sticker: 'smiley',
+        title: 'activations',
+        services: ['Activation Strategy', 'Event Planning', 'Art Direction', 'Production']
+    },
+    {
+        color: 'maroon',
+        sticker: 'hand',
+        title: 'video production',
+        services: ['Campaign video', 'Branded content', 'Social content', 'Marketing material']
+    },
+    {
+        color: 'pink',
+        sticker: 'heart',
+        title: 'with partners',
+        services: ['PR/Journalism', '3D / VFX', 'food styling', 'Photography']
+    }
+];
+
+const BULLET_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="16" class="services-card__bullet-svg" aria-hidden="true"><use href="#bullet-icon" /></svg>';
+
+function buildCard({ color, sticker, title, services }) {
+    const items = services.map(s => '<li>' + BULLET_SVG + s + '</li>').join('');
+    return (
+        '<div class="card card-' + color + '">' +
+        '<div class="card-sticker sticker-' + sticker + '">' +
+        '<img src="assets/sticker-' + sticker + '.svg" alt="" width="100%" loading="lazy" aria-hidden="true">' +
+        '</div>' +
+        '<h3 class="card-title">' + title + '</h3>' +
+        '<svg width="100%" height="10" class="card-divider-svg" aria-hidden="true"><use href="#card-divider" /></svg>' +
+        '<ul class="card-list">' + items + '</ul>' +
+        '</div>'
+    );
+}
+
+function injectCards() {
+    const wrapper = document.getElementById('cards-wrapper');
+    if (!wrapper) return;
+    wrapper.innerHTML = CARDS_DATA.map(buildCard).join('');
+    initCardAnimations(); // bind GSAP hover now that cards are in the DOM
+}
+
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    injectCards();
+} else {
+    document.addEventListener('DOMContentLoaded', injectCards);
 }
