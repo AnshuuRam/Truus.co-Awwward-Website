@@ -405,6 +405,48 @@ gsap.to(footerStickers, {
     }
 });
 
+// ─── Footer Sticker Hover "Invisible Energy Push" Animation ──────────────
+footerStickers.forEach((sticker, i) => {
+    const baseRotation = stickerRotations[i % stickerRotations.length] * 0.7;
+
+    sticker.addEventListener('mousemove', (e) => {
+        const rect = sticker.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        // Calculate vector from cursor to center
+        const deltaX = e.clientX - centerX;
+        const deltaY = e.clientY - centerY;
+
+        // Push intensity: more when closer to center
+        // Max push distance ~30px + random jitter
+        const pushIntensity = 35;
+        const jitter = () => (Math.random() - 0.5) * 15; // Fast jitter
+
+        // Move AWAY from the cursor
+        gsap.to(sticker, {
+            x: -deltaX * 1.5 + jitter(),
+            y: -deltaY * 1.5 + jitter(),
+            rotation: baseRotation + (deltaX * 0.2) + (Math.random() - 0.5) * 30,
+            duration: 0.1, // Quick response
+            ease: "none",  // Non-smooth feel
+            overwrite: "auto"
+        });
+    });
+
+    sticker.addEventListener('mouseleave', () => {
+        // Smooth snap back on leave
+        gsap.to(sticker, {
+            x: 0,
+            y: 0,
+            rotation: baseRotation,
+            duration: 0.8,
+            ease: "elastic.out(1, 0.3)",
+            overwrite: true
+        });
+    });
+});
+
 // ─── Footer Map Link — underline SVG hover draw/undraw animation ───
 const footerMapLink = document.querySelector('.footer-map-link');
 if (footerMapLink) {
