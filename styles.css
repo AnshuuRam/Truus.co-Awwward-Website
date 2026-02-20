@@ -365,11 +365,11 @@ body::-webkit-scrollbar {
     --sticker-phone-top: -45px;
     --sticker-phone-left: 155px;
 
-    --sticker-smiley-top: -180px;
+    --sticker-smiley-top: -50px;
 
     --sticker-hand-top: -40px;
 
-    --sticker-heart-top: -250px;
+    --sticker-heart-top: -50px;
     --sticker-heart-right: 15px;
 }
 
