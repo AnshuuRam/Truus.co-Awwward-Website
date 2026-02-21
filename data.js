@@ -76,3 +76,14 @@ const CARDS_DATA = [
         services: ['PR/Journalism', '3D / VFX', 'food styling', 'Photography']
     }
 ];
+
+// ─── Wiggle Intensity Config ────────────────────────────────────────────────
+// Edit the numbers below to control the hover wiggle on each element.
+// Higher number = more rotation (degrees). Set to 0 to disable.
+const WIGGLE_CONFIG = {
+    socials: 5,  // LinkedIn / Instagram / TikTok icons
+    jobHeading: 1,  // "not hiring right now" heading
+    googleMap: 1,  // Google Maps link text
+    email: 1,  // hello@truus.co
+    whatsapp: 1,  // send us a whatsapp
+};
