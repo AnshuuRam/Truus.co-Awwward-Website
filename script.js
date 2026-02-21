@@ -287,9 +287,7 @@ marqueeTl.to(".marquee-underline", {
     }, "-=0.3");
 
 // Marquee Randomization Logic
-// brands[] is defined in data.js
-
-// colors[] is defined in data.js
+// brands[] and colors[] are defined in data.js
 
 function shuffleArray(array) {
     const shuffled = [...array];
@@ -298,6 +296,48 @@ function shuffleArray(array) {
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
     return shuffled;
+}
+
+// Shuffle brands so no two visually identical logos appear back-to-back.
+// Compares by `src` (not name) so placeholder logos with the same image are caught too.
+// Also ensures the last item ≠ first item (fixes the seamless-loop seam).
+function shuffleNoAdjacentSrc(array) {
+    const arr = shuffleArray([...array]);
+    for (let i = 1; i < arr.length; i++) {
+        if (arr[i].src === arr[i - 1].src) {
+            for (let j = i + 1; j < arr.length; j++) {
+                if (arr[j].src !== arr[i - 1].src) {
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                    break;
+                }
+            }
+        }
+    }
+    // Fix seam: last item must differ from first (they'll be adjacent in the loop)
+    if (arr[arr.length - 1].src === arr[0].src) {
+        for (let j = 1; j < arr.length - 1; j++) {
+            if (arr[j].src !== arr[0].src && arr[j].src !== arr[arr.length - 2].src) {
+                [arr[arr.length - 1], arr[j]] = [arr[j], arr[arr.length - 1]];
+                break;
+            }
+        }
+    }
+    return arr;
+}
+
+// Assign colors so no two consecutive cards share the same color,
+// including across the seamless-loop seam (last → first wrap-around).
+function assignColorsNoAdjacent(count, colorPool) {
+    const result = [];
+    for (let i = 0; i < count; i++) {
+        const prev = i > 0 ? result[i - 1] : null;
+        // On last item, also avoid matching the first (seam constraint)
+        const seamColor = i === count - 1 ? result[0] : null;
+        const available = colorPool.filter(c => c !== prev && c !== seamColor);
+        const pool = available.length > 0 ? available : colorPool.filter(c => c !== prev);
+        result.push(pool[Math.floor(Math.random() * pool.length)]);
+    }
+    return result;
 }
 
 function createMarqueeItem(brand, color) {
@@ -315,17 +355,16 @@ function populateMarquees() {
     const tracks = document.querySelectorAll('.marquee-track');
     if (!tracks.length) return;
 
-    tracks.forEach((track, trackIndex) => {
-        const shuffledBrands = shuffleArray(brands);
-        const shuffledColors = shuffleArray(colors);
+    tracks.forEach((track) => {
+        const shuffledBrands = shuffleNoAdjacentSrc(brands);
+        const assignedColors = assignColorsNoAdjacent(shuffledBrands.length, colors);
 
         let trackContent = '';
         shuffledBrands.forEach((brand, index) => {
-            const color = shuffledColors[index % shuffledColors.length];
-            trackContent += createMarqueeItem(brand, color);
+            trackContent += createMarqueeItem(brand, assignedColors[index]);
         });
 
-        // On mobile: single set of items (grid layout, no infinite loop needed)
+        // On mobile: single set (grid layout, no loop needed)
         // On desktop: duplicate for seamless vertical scroll
         track.innerHTML = isMobile ? trackContent : trackContent + trackContent;
     });
